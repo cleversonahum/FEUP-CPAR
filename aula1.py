@@ -1,20 +1,23 @@
 #! /usr/bin/python
 
+import sys
 import numpy as np
 
-r1 = input ("Enter the quantity of rows to first matrix: ")
-c1 = input ("Enter the quantity of columns to first matrix: ")
-r2 = input ("Enter the quantity of rows to second matrix: ")
-c2 = input ("Enter the quantity of columns to second matrix: ")
+if (len(sys.argv)!=3):
+    print("ERROR: Insuficient Arguments")
+    quit()
 
-if (c1!=r1): 
-	print("Columns of the first matrix need to be equal the second matrix")
-	quit()
+if (sys.argv[2]!=sys.argv[1]): 
+    print("ERROR: Columns of the first matrix need to be equal the second matrix")
+    quit()
+
+r = int(sys.argv[1] )
+c = int(sys.argv[2])
 
 #Filling First Matrix Values
-m1 = np.random.randint(1,10,size=(r1,c1))
-m2 = np.random.randint(1,10,size=(r2,c2))
-print(m1)
-print(m2)
+m1 = np.random.randint(1,10,size=(r,c))
+m2 = np.random.randint(1,10,size=(r,c))
+#print(m1)
+#print(m2)
 mult = np.matmul(m1, m2)
-print(mult)
+#print(mult)
