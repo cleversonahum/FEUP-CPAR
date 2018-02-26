@@ -1,0 +1,28 @@
+#!/bin/bash
+
+echo "Time C++: 500 :"
+time ./aula1 500
+echo "Time C++: 1000 :"
+time ./aula1 1000
+echo "Time C++: 1500 :"
+time ./aula1 1500
+echo "Time C++: 2000 :"
+time ./aula1 2000
+echo "Time C++: 2500 :"
+time ./aula1 2500
+echo "Time C++: 3000 :"
+time ./aula1 3000
+
+echo "Time Java: 500 :"
+time java Aula1 500
+echo "Time Java: 1000 :"
+time java Aula1 1000
+echo "Time Java: 1500 :"
+time java Aula1 1500
+echo "Time Java: 2000 :"
+time java Aula1 2000
+echo "Time Java: 2500 :"
+time java Aula1 2500
+echo "Time Java: 3000 :"
+time java Aula1 3000
+
