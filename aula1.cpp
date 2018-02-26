@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <ctime>
 #include <vector>
 
 using namespace std;
@@ -24,13 +23,10 @@ int main(int argc, char* argv[]) {
 	int d = atoi(argv[1]);
 	vector<int> m1(d*d), m2(d*d), mult(d*d);
 
-	//Initializing Seed to random number
-	srand (time(0));
-
 	//Filling m1 and m2
 	for(int i =0; i<d*d; i++) {
-		m1[i] = rand() % 10 + 1;
-		m2[i] = rand() % 10 + 1;
+		m1[i] = i;
+		m2[i] = d*d-i;
 	}
 
 
