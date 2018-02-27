@@ -20,13 +20,25 @@ int multMatrixP(int d, int np);
 
 int main(int argc, char* argv[]) {
 
-	if (argc > 3) {
+	if (argc > 4) {
 		cout << "Invalid number of arguments";
 		return -1;
 	}
 
-	//multMatrix(atoi(argv[1]));	
-	multMatrixP(atoi(argv[1]), atoi(argv[2]));	
+	switch (atoi(argv[1])) {
+		case 1:
+			multMatrix(atoi(argv[2]));
+			break;
+		case 2:
+			multMatrixP(atoi(argv[2]), atoi(argv[3]));
+			break;
+		case 3:
+			cout<<"Function not implemented";
+			break;
+		case 4:
+			cout<<"Function not implemented";
+			break;
+	}
 
 	return 0;
 }
