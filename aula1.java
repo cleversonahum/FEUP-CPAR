@@ -6,8 +6,12 @@ class Aula1 {
 			System.exit(0);
 		}
 
-		int d = Integer.parseInt(args[0]);
+		
+		multMatrix(Integer.parseInt(args[0]));
+	}
 
+	public static void multMatrix(int d) {
+		
 		int m1[] = new int[d*d];
 		int m2[] = new int[d*d];
 		int mult[] = new int[d*d];
@@ -28,6 +32,5 @@ class Aula1 {
 				for(int k=0; k<d;++k) {
 					mult[i*d+j] += m1[i*d+k] + m2[k*d+j];
 				}
-
 	}
 }
