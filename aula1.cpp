@@ -19,6 +19,10 @@ int mult2Matrix(int d);
 int multMatrixP(int d, int np);
 int mult2MatrixP(int d, int np);
 
+void handle_error(int err){
+	std::cerr << "PAPI error: " << err << std::endl;
+}
+
 int main(int argc, char* argv[]) {
 
 	if (argc > 4) {
@@ -27,18 +31,24 @@ int main(int argc, char* argv[]) {
 	}
 
 	//PAPI variables
-	float real_time, proc_time,ipc;
-	long long ins;
-	float real_time_i, proc_time_i, ipc_i;
-	long long ins_i;
-	int retval;
+	//float real_time, proc_time,ipc;
+	//long long ins;
+	//float real_time_i, proc_time_i, ipc_i;
+	//long long ins_i;
+	//int retval;
 
-	if((retval=PAPI_ipc(&real_time_i,&proc_time_i,&ins_i,&ipc_i)) < PAPI_OK)
-	{ 
-		printf("Could not initialise PAPI_ipc \n");
-		printf("retval: %d\n", retval);
-		exit(1);
-	}
+	int numEvents = 6;
+	long long values[6];
+	int events[6] = {PAPI_L1_DCA, PAPI_L1_DCH, PAPI_L1_DCM, PAPI_L2_DCA, PAPI_L2_DCH, PAPI_L2_DCM};
+
+	//if((retval=PAPI_ipc(&real_time_i,&proc_time_i,&ins_i,&ipc_i)) < PAPI_OK)
+	//{ 
+	//	printf("Could not initialise PAPI_ipc \n");
+	//	printf("retval: %d\n", retval);
+	//	exit(1);
+	//}
+	if (PAPI_start_counters(events, numEvents) != PAPI_OK)
+		handle_error(1);
 
 	switch (atoi(argv[1])) {
 		case 1:
@@ -55,19 +65,28 @@ int main(int argc, char* argv[]) {
 			break;
 	}
 
-	if((retval=PAPI_ipc( &real_time, &proc_time, &ins, &ipc))<PAPI_OK)
-	{    
-		printf("retval: %d\n", retval);
-		exit(1);
-	}
+	//if((retval=PAPI_ipc( &real_time, &proc_time, &ins, &ipc))<PAPI_OK)
+	//{    
+	//	printf("retval: %d\n", retval);
+	//	exit(1);
+	//}
 
 
-	printf("Real_time: %f Proc_time: %f Total instructions: %lld IPC: %f\n", 
-			real_time, proc_time,ins,ipc);
+	//printf("Real_time: %f Proc_time: %f Total instructions: %lld IPC: %f\n", 
+	//		real_time, proc_time,ins,ipc);
 
 	/* clean up */
-	PAPI_shutdown();
+	//PAPI_shutdown();
+	if ( PAPI_stop_counters(values, numEvents) != PAPI_OK)
+		handle_error(1);
 
+	cout<<"L1 accesses: "<<values[0]<<endl;
+	cout<<"L1 Hits: "<<values[1]<<endl;
+	cout<<"L1 Hits: "<<values[2]<<endl<<endl;
+
+	cout<<"L2 Hits: "<<values[3]<<endl;
+	cout<<"L2 Hits: "<<values[4]<<endl;
+	cout<<"L2 Hits: "<<values[5]<<endl;
 	return 0;
 }
 
