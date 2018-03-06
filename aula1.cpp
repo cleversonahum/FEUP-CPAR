@@ -31,26 +31,43 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	//PAPI variables
-	//float real_time, proc_time,ipc;
-	//long long ins;
-	//float real_time_i, proc_time_i, ipc_i;
-	//long long ins_i;
-	//int retval;
+	//PAPI Variables
+#ifdef IPC
+	//IPC variables
+	float real_time, proc_time,ipc;
+	long long ins;
+	float real_time_i, proc_time_i, ipc_i;
+	long long ins_i;
+	int retval;
+#endif
 
+#ifdef CACHE
+	//CACHE variables
 	int numEvents = 6;
 	long long values[6];
 	int events[6] = {PAPI_L1_DCA, PAPI_L1_DCH, PAPI_L1_DCM, PAPI_L2_DCA, PAPI_L2_DCH, PAPI_L2_DCM};
+#endif
+	//END PAPI Variables
 
-	//if((retval=PAPI_ipc(&real_time_i,&proc_time_i,&ins_i,&ipc_i)) < PAPI_OK)
-	//{ 
-	//	printf("Could not initialise PAPI_ipc \n");
-	//	printf("retval: %d\n", retval);
-	//	exit(1);
-	//}
+	
+#ifdef IPC
+	//Starting PAPI IPC
+	if((retval=PAPI_ipc(&real_time_i,&proc_time_i,&ins_i,&ipc_i)) < PAPI_OK)
+	{ 
+		printf("Could not initialise PAPI_ipc \n");
+		printf("retval: %d\n", retval);
+		exit(1);
+	}
+#endif
+
+
+#ifdef CACHE
+	//Starting PAPI CACHE
 	if (PAPI_start_counters(events, numEvents) != PAPI_OK)
 		handle_error(1);
+#endif
 
+	//Choosing function
 	switch (atoi(argv[1])) {
 		case 1:
 			multMatrix(atoi(argv[2]));
@@ -66,29 +83,30 @@ int main(int argc, char* argv[]) {
 			break;
 	}
 
-	//if((retval=PAPI_ipc( &real_time, &proc_time, &ins, &ipc))<PAPI_OK)
-	//{    
-	//	printf("retval: %d\n", retval);
-	//	exit(1);
-	//}
 
+#ifdef IPC
+	//Finishing PAPI IPC
+	if((retval=PAPI_ipc( &real_time, &proc_time, &ins, &ipc))<PAPI_OK)
+	{    
+		printf("retval: %d\n", retval);
+		exit(1);
+	}
 
-	//printf("Real_time: %f Proc_time: %f Total instructions: %lld IPC: %f\n", 
-	//		real_time, proc_time,ins,ipc);
+	//printf("Real Time\tProc Time\tTotal Instructions\tIPC");
+	printf("%f\t%f\t%lld\t%f\n", 
+			real_time, proc_time,ins,ipc);
+	PAPI_shutdown();
+#endif 
 
-	/* clean up */
-	//PAPI_shutdown();
+#ifdef CACHE
 	if ( PAPI_stop_counters(values, numEvents) != PAPI_OK)
 		handle_error(1);
+	
+	//printf("L1 DCA\tL1 DCH\tL1 DCM\tL2 DCA\tL2 DCH\tL2 DCM");
+	printf("%lld\t%lld\t%lld\t%lld\t%lld\t%lld\n",
+			values[0],values[1],values[2],values[3],values[4],values[5]);
+#endif
 
-	cout<<"L1 accesses: "<<values[0]<<endl;
-	cout<<"L1 Hits: "<<values[1]<<endl;
-	cout<<"L1 Hits: "<<values[2]<<endl<<endl;
-
-	cout<<"L2 Hits: "<<values[3]<<endl;
-	cout<<"L2 Hits: "<<values[4]<<endl;
-	cout<<"L2 Hits: "<<values[5]<<endl;
-	return 0;
 }
 
 int multMatrix(int d) {
@@ -145,16 +163,6 @@ int mult2Matrix(int d) {
 				mult[i*d+j] += m1[i*d+k] * m2[k*d+j];
 			}
 
-#if DEBUG==1
-	//Showing m1 and m2
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor m1= "<<m1[i]<<"; valor m2= "<<m2[i]<<"\n";
-
-	//Showing mult
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor = "<<mult[i]<<"\n";
-#endif
-
 	return 0;
 }
 
@@ -184,16 +192,6 @@ int multMatrixP(int d, int nt) {
 			{
 				mult[i*d+j] += m1[i*d+k] * m2[k*d+j];
 			}
-
-#if DEBUG==1
-	//Showing m1 and m2
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor m1= "<<m1[i]<<"; valor m2= "<<m2[i]<<"\n";
-
-	//Showing mult
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor = "<<mult[i]<<"\n";
-#endif
 
 	return 0;
 }
@@ -226,16 +224,6 @@ int mult2MatrixP(int d, int nt) {
 			{
 				mult[i*d+j] += m1[i*d+k] * m2[k*d+j];
 			}
-
-#if DEBUG==1
-	//Showing m1 and m2
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor m1= "<<m1[i]<<"; valor m2= "<<m2[i]<<"\n";
-
-	//Showing mult
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor = "<<mult[i]<<"\n";
-#endif
 
 	return 0;
 }
