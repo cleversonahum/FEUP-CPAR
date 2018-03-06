@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 #include "papi.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace std;
 
