@@ -13,7 +13,6 @@
 
 using namespace std;
 
-#define DEBUG 0 
 
 //Protypes
 int multMatrix(int d);
@@ -117,16 +116,6 @@ int multMatrix(int d) {
 				mult[i*d+j] += m1[i*d+k] * m2[k*d+j];
 			}
 		}
-
-#if DEBUG==1
-	//Showing m1 and m2
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor m1= "<<m1[i]<<"; valor m2= "<<m2[i]<<"\n";
-
-	//Showing mult
-	for(int i = 0; i<d*d;i++)
-		cout<<"valor = "<<mult[i]<<"\n";
-#endif
 
 	return 0;
 }
