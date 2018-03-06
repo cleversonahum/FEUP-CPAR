@@ -6,6 +6,8 @@ class Aula1 {
 			System.exit(0);
 		}
 		
+		long startTime = System.nanoTime();
+	
 		switch (Integer.parseInt(args[0])) {
                 case 1:
                         multMatrix(Integer.parseInt(args[1]));
@@ -14,6 +16,9 @@ class Aula1 {
                         mult2Matrix(Integer.parseInt(args[1]));
                         break;
         	}	
+
+		long stopTime = System.nanoTime();
+		System.out.println("Execution Time: " + ((stopTime - startTime)/1000000000.0));
 		
 	}
 
