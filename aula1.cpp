@@ -19,10 +19,7 @@ int multMatrix(int d);
 int mult2Matrix(int d);
 int multMatrixP(int d, int np);
 int mult2MatrixP(int d, int np);
-
-void handle_error(int err){
-	std::cerr << "PAPI error: " << err << std::endl;
-}
+void handle_error(int err);
 
 int main(int argc, char* argv[]) {
 
@@ -226,4 +223,9 @@ int mult2MatrixP(int d, int nt) {
 			}
 
 	return 0;
+}
+
+
+void handle_error(int err){
+	std::cerr << "PAPI error: " << err << std::endl;
 }
