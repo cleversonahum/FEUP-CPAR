@@ -40,9 +40,10 @@ int main(int argc, char* argv[]) {
 
 #ifdef CACHE
 	//CACHE variables
-	int numEvents = 6;
-	long long values[6];
-	int events[6] = {PAPI_L1_DCA, PAPI_L1_DCH, PAPI_L1_DCM, PAPI_L2_DCA, PAPI_L2_DCH, PAPI_L2_DCM};
+	int numEvents = 2;
+	long long values[2];
+	//int events[6] = {PAPI_L1_DCA, PAPI_L1_DCH, PAPI_L1_DCM, PAPI_L2_DCA, PAPI_L2_DCH, PAPI_L2_DCM};
+	int events[2] = {PAPI_L2_DCA, PAPI_L2_DCM};
 #endif
 	//END PAPI Variables
 
@@ -100,8 +101,10 @@ int main(int argc, char* argv[]) {
 		handle_error(1);
 	
 	//printf("L1 DCA\tL1 DCH\tL1 DCM\tL2 DCA\tL2 DCH\tL2 DCM");
-	printf("%lld\t%lld\t%lld\t%lld\t%lld\t%lld\n",
-			values[0],values[1],values[2],values[3],values[4],values[5]);
+	//printf("%lld\t%lld\t%lld\t%lld\t%lld\t%lld\n",
+			//values[0],values[1],values[2],values[3],values[4],values[5]);
+	printf("%lld\t%lld\n",
+			values[0],values[1]);
 #endif
 
 }

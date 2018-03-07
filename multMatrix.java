@@ -1,4 +1,4 @@
-class Aula1 {
+class MultMatrix {
 
 	public static void main(String[] args) {
 		if (args.length != 2) {
@@ -18,7 +18,7 @@ class Aula1 {
         	}	
 
 		long stopTime = System.nanoTime();
-		System.out.println("Execution Time: " + ((stopTime - startTime)/1000000000.0));
+		System.out.println(((stopTime - startTime)/1000000000.0));
 		
 	}
 
