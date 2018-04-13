@@ -4,12 +4,12 @@
 
 using namespace std;
  
-void se(int n,string nameCSV) {
+void se(int n, string filename) {
 	ofstream file; //CSV file
 
 	std::vector<bool> primes(n+1, true);
 
-	file.open(nameCSV);
+	file.open(filename);
 	file << "Primes until " << n << "\n";
 
 	for (int p=2; p*p<=n; p++) {
@@ -26,7 +26,7 @@ void se(int n,string nameCSV) {
 	file.close();
 }
  
-int main() {
-	se(10, "primes.csv");
+int main(int argc, char* argv[]) {
+	se(atoi(argv[1]), argv[2]);
 	return 0;
 }
