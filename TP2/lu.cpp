@@ -1,5 +1,8 @@
 #include <bits/stdc++.h>
+#include <iostream>
 #include <vector>
+#include <sstream>
+#include <unistd.h> 
 
 using namespace std;
 
@@ -55,24 +58,36 @@ void lu(vector<vector<double>> mat, int n)
 	}
 }
 
+int readCSV(string csvFile, vector<vector<double>> &mat, int d) {
+
+	std::ifstream file(csvFile);
+
+	string readNumber;
+	int line = 0;
+
+	while(file.good()) {
+
+		for(int j=0; j<d; j++) {
+
+			if(j==(d-1))
+				getline(file,readNumber);
+			else 
+				getline(file,readNumber,'\t');
+
+			if(line<=d-1)
+				mat[line][j] = stod(readNumber);
+		}
+
+		line++;
+	}
+
+	file.close();
+}
 int main()
 {
 	vector <vector <double>> mat(3, vector<double>(3));
 
-	mat[0][0] = 2;
-	mat[0][1] = -1;
-	mat[0][2] = -2;
-	mat[1][0] = -4;
-	mat[1][1] = 6;
-	mat[1][2] = 3;
-	mat[2][0] = -4;
-	mat[2][1] = -2;
-	mat[2][2] = 8;
+	readCSV("./matrix.csv", mat, 3);
 
-	//int mat[][100] = { { 2, -1, -2 },
-	//{ -4, 6, 3 },
-	//{ -4, -2, 8 } };
-
-	lu(mat, 3);
 	return 0;
 }
