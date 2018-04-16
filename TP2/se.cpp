@@ -34,7 +34,7 @@ void se(int n, string filename, int nt) {
 	file.open(filename);
 	file << "Primes until " << n << "\n";
 
-#pragma omp parallel for num_threads(nt)
+	#pragma omp parallel for num_threads(nt)
 	for (int p=2; p<=sn; p++) {
 		if (primes[p] == true) {
         		for (int i=p*2; i<=n; i += p)
@@ -50,6 +50,9 @@ void se(int n, string filename, int nt) {
 }
  
 int main(int argc, char* argv[]) {
-	se(atoi(argv[1]), argv[2]);
+	int n = atoi(argv[1]);
+	string filename = argv[2];
+	int nt = atoi(argv[3]);
+	se(atoi(argv[1]), argv[2], nt);
 	return 0;
 }
