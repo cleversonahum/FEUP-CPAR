@@ -10,6 +10,8 @@ void lu(vector<vector<double>> mat, int n)
 {
 
 	vector<vector<double> > lower(n, vector<double>(n)), upper(n, vector<double>(n));
+	ofstream l, u;
+
 
 	for (int i = 0; i < n; i++) {
 		// Upper
@@ -22,6 +24,7 @@ void lu(vector<vector<double>> mat, int n)
 			// U(i, k)
 			upper[i][k] = mat[i][k] - sum;
 		}
+
 
 		// Lower 
 		for (int k = i; k < n; k++) {
@@ -38,25 +41,28 @@ void lu(vector<vector<double>> mat, int n)
 				lower[k][i] = (mat[k][i] - sum) / upper[i][i];
 			}
 		}
+
 	}
-
-	// setw is for displaying nicely
-	cout << setw(6) << "      Lower Triangular"
-		<< setw(32) << "Upper Triangular" << endl;
-
-	// Displaying the result :
+	
+	//Writing CSV
+	u.open("U.csv");
+	l.open("L.csv");
 	for (int i = 0; i < n; i++) {
 		// Lower
 		for (int j = 0; j < n; j++)
-			cout << setw(6) << lower[i][j] << "\t"; 
-		cout << "\t";
+			l << lower[i][j] << "\t"; 
 
 		// Upper
 		for (int j = 0; j < n; j++)
-			cout << setw(6) << upper[i][j] << "\t";
-		cout << endl;
+			u << upper[i][j] << "\t";
+		u << endl;
+		l << endl;
 	}
+
+	u.close();
+	l.close();
 }
+
 
 int readCSV(string csvFile, vector<vector<double>> &mat, int d) {
 
@@ -83,11 +89,15 @@ int readCSV(string csvFile, vector<vector<double>> &mat, int d) {
 
 	file.close();
 }
-int main()
+int main(int argc, char* argv[])
 {
-	vector <vector <double>> mat(3, vector<double>(3));
+	int n = atoi(argv[1]);
+	string file = argv[2];
+	vector <vector <double>> mat(n, vector<double>(n));
 
-	readCSV("./matrix.csv", mat, 3);
+	readCSV(file, mat, n);
+
+	lu(mat, n);
 
 	return 0;
 }
