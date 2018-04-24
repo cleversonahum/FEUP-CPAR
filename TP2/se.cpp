@@ -96,12 +96,19 @@ void seP(int n, string filename, int argc, char* argv[]) {
 	//		cout<<i<<" = "<<primes[i]<<endl;
 
 	MPI_Barrier(MPI_COMM_WORLD); //All process waits here until other process arrives in this barrier
+	cout<<"SAIU DA BARREIRA"<<endl;
+	if(rank==1) { //Sending primes array to process with rank 0
+		int number = rank;
+		MPI_Send(&number, 1, MPI_INT, 0, rank, MPI_COMM_WORLD);
+	}
 
 	//Receiving values calculated
 	if(rank==0) { //Process 1 is responsible for receive all processed matrixes. Receiving other matrixes of no multiples calculated in all process
-		for(int i=0; i<size; i++)
-			cout<<"teste";
-			//MPI_Recv(&teste, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		//for(int i=1; i<size; i++) {
+			int teste;
+			MPI_Recv(&teste, 1, MPI_INT, rank, rank, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		//}
+		cout<<"\nTESTE: "<<teste<<endl;
 	}
 
 	//for (int p=2; p<=n; p++)
