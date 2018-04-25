@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 #include <unistd.h> 
+#include <mpi.h>
+#include <math.h>
 
 using namespace std;
 
@@ -42,7 +44,7 @@ void lu(vector<vector<double>> mat, int n) {
 		}
 
 	}
-	
+
 	//Writing CSV
 	u.open("U.csv");
 	l.open("L.csv");
@@ -67,7 +69,7 @@ void lu(vector<vector<double>> mat, int n, int nt) {
 	vector<vector<double> > lower(n, vector<double>(n)), upper(n, vector<double>(n));
 	ofstream l, u;
 
-	#pragma omp parallel for num_threads(nt)
+#pragma omp parallel for num_threads(nt)
 	for (int i = 0; i < n; i++) {
 		// Upper
 		for (int k = i; k < n; k++) {
@@ -98,7 +100,7 @@ void lu(vector<vector<double>> mat, int n, int nt) {
 		}
 
 	}
-	
+
 	//Writing CSV
 	u.open("U.csv");
 	l.open("L.csv");
@@ -118,43 +120,142 @@ void lu(vector<vector<double>> mat, int n, int nt) {
 	l.close();
 }
 
-int readCSV(string csvFile, vector<vector<double>> &mat, int d) {
+void lu(vector<vector<double>> mat, int n, int argc, char* argv[]) {
 
-	std::ifstream file(csvFile);
+	vector<double> lower(n*n), upper(n*n);
+	ofstream l, u;
+	int rank, size;
 
-	string readNumber;
-	int line = 0;
+	MPI_Init(&argc, &argv);
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	while(file.good()) {
+	int limit, ri;
+	ri = ceil(((float)n)/(float)size);
 
-		for(int j=0; j<d; j++) {
+	if(rank!=(size-1)) //Defining Limits for Loops
+		limit = (rank*ri)+ri;
+	else
+		limit = n;
 
-			if(j==(d-1))
-				getline(file,readNumber);
-			else 
-				getline(file,readNumber,'\t');
+	for (int i = (rank*ri); i < limit; i++) { //Calculating upper and lower matrix
+		// Upper
+		for (int k = i; k < n; k++) {
+			// Sum L(i, j) * U(j, k)
+			int sum = 0;
+			for (int j = 0; j < i; j++)
+				sum += (lower[i*n+j] * upper[j*n+k]);
 
-			if(line<=d-1)
-				mat[line][j] = stod(readNumber);
+			// U(i, k)
+			upper[i*n+k] = mat[i][k] - sum;
 		}
 
-		line++;
+
+		// Lower 
+		for (int k = i; k < n; k++) {
+			if (i == k)
+				lower[i*n+i] = 1; // Diagonal
+			else {
+
+				// Sum L(k, j) * U(j, i)
+				int sum = 0;
+				for (int j = 0; j < i; j++)
+					sum += (lower[k*n+j] * upper[j*n+i]);
+
+				// L(k, i)
+				lower[k*n+i] = (mat[k][i] - sum) / upper[i*n+i];
+			}
+		}
+
 	}
 
-	file.close();
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	if(rank!=0) { //Sending array to process with rank 0
+		MPI_Request req[2];
+		MPI_Isend(upper.data(), upper.size(), MPI_DOUBLE, 0, rank*rank, MPI_COMM_WORLD, &req[0]);
+		MPI_Isend(lower.data(), lower.size(), MPI_DOUBLE, 0, rank*rank+1, MPI_COMM_WORLD, &req[1]);
+	}
+	else { //Process 0
+		vector<vector<double>> received(size-1, vector<double>(n*n));
+		MPI_Request req[(size-1)*2];
+		MPI_Status status[(size-1)*2];
+		int cont = 1;
+
+		for(int i=0; i<(size-1); i++) { //Receiving from process {
+			MPI_Irecv(&received[i][0], received.size(), MPI_DOUBLE, i+1, (i+1)*(i+1), MPI_COMM_WORLD, &req[i*cont]);
+			MPI_Irecv(&received[i][0], received.size(), MPI_DOUBLE, i+1, (i+1)*(i+1)+1, MPI_COMM_WORLD, &req[i*cont+1]);
+			cont++;
+		}
+
+		for(int i = 0; i<2*(size-1);i++) //Waiting received values
+			MPI_Wait(&req[i], &status[i]);
+
+		//DO MAGIC HERE
+
+
+		//Writing CSV
+		u.open("U.csv");
+		l.open("L.csv");
+		for (int i = 0; i < n; i++) {
+			// Lower
+			for (int j = 0; j < n; j++)
+				l << lower[i*n+j] << "\t"; 
+
+			// Upper
+			for (int j = 0; j < n; j++)
+				u << upper[i*n+j] << "\t";
+			u << endl;
+			l << endl;
+		}
+
+		u.close();
+		l.close();
+
+	}
+
+	MPI_Finalize();
+
 }
 
 
-int main(int argc, char* argv[])
-{
-	int n = atoi(argv[2]);
-	string file = argv[1];
-	int nt = atoi(argv[3]); 
-	vector <vector <double>> mat(n, vector<double>(n));
+	int readCSV(string csvFile, vector<vector<double>> &mat, int d) {
 
-	readCSV(file, mat, n);
+		std::ifstream file(csvFile);
 
-	lu(mat, n, nt);
+		string readNumber;
+		int line = 0;
 
-	return 0;
-}
+		while(file.good()) {
+
+			for(int j=0; j<d; j++) {
+
+				if(j==(d-1))
+					getline(file,readNumber);
+				else 
+					getline(file,readNumber,'\t');
+
+				if(line<=d-1)
+					mat[line][j] = stod(readNumber);
+			}
+
+			line++;
+		}
+
+		file.close();
+	}
+
+
+	int main(int argc, char* argv[])
+	{
+		int n = atoi(argv[2]);
+		string file = argv[1];
+		int nt = atoi(argv[3]); 
+		vector <vector <double>> mat(n, vector<double>(n));
+
+		readCSV(file, mat, n);
+
+		lu(mat, n, nt);
+
+		return 0;
+	}
