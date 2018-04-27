@@ -8,9 +8,9 @@
 
 using namespace std;
 
-void lu(vector<vector<double>> mat, int n) {
+void lu(vector<float> mat, int n) {
 
-	vector<vector<double> > lower(n, vector<double>(n)), upper(n, vector<double>(n));
+	vector<vector<float> > lower(n, vector<float>(n)), upper(n, vector<float>(n));
 	ofstream l, u;
 
 
@@ -23,7 +23,7 @@ void lu(vector<vector<double>> mat, int n) {
 				sum += (lower[i][j] * upper[j][k]);
 
 			// U(i, k)
-			upper[i][k] = mat[i][k] - sum;
+			upper[i][k] = mat[i*n+k] - sum;
 		}
 
 
@@ -39,7 +39,7 @@ void lu(vector<vector<double>> mat, int n) {
 					sum += (lower[k][j] * upper[j][i]);
 
 				// L(k, i)
-				lower[k][i] = (mat[k][i] - sum) / upper[i][i];
+				lower[k][i] = (mat[k*n+i] - sum) / upper[i][i];
 			}
 		}
 
@@ -64,9 +64,9 @@ void lu(vector<vector<double>> mat, int n) {
 	l.close();
 }
 
-void lu(vector<vector<double>> mat, int n, int nt) {
+void lu(vector<float> mat, int n, int nt) {
 
-	vector<vector<double> > lower(n, vector<double>(n)), upper(n, vector<double>(n));
+	vector<vector<float> > lower(n, vector<float>(n)), upper(n, vector<float>(n));
 	ofstream l, u;
 
 #pragma omp parallel for num_threads(nt)
@@ -79,7 +79,7 @@ void lu(vector<vector<double>> mat, int n, int nt) {
 				sum += (lower[i][j] * upper[j][k]);
 
 			// U(i, k)
-			upper[i][k] = mat[i][k] - sum;
+			upper[i][k] = mat[i*n+k] - sum;
 		}
 
 
@@ -95,7 +95,7 @@ void lu(vector<vector<double>> mat, int n, int nt) {
 					sum += (lower[k][j] * upper[j][i]);
 
 				// L(k, i)
-				lower[k][i] = (mat[k][i] - sum) / upper[i][i];
+				lower[k][i] = (mat[k*n+i] - sum) / upper[i][i];
 			}
 		}
 
@@ -193,33 +193,7 @@ void lu(vector <float> mat, int n, int argc, char* argv[]) { //Using Forward Gau
 }
 
 
-int readCSV(string csvFile, vector<vector<double>> &mat, int d) { //stores in a bidimentional array
-
-	std::ifstream file(csvFile);
-
-	string readNumber;
-	int line = 0;
-
-	while(file.good()) {
-
-		for(int j=0; j<d; j++) {
-
-			if(j==(d-1))
-				getline(file,readNumber);
-			else 
-				getline(file,readNumber,'\t');
-
-			if(line<=d-1)
-				mat[line][j] = stod(readNumber);
-		}
-
-		line++;
-	}
-
-	file.close();
-}
-
-int readCSVmpi(string csvFile, vector<float> &mat, int d) { //stores in a unidimentional array
+int readCSV(string csvFile, vector<float> &mat, int d) { //stores in a unidimentional array
 
 	std::ifstream file(csvFile);
 
@@ -246,14 +220,33 @@ int readCSVmpi(string csvFile, vector<float> &mat, int d) { //stores in a unidim
 }
 
 int main(int argc, char* argv[]) {
-
-	int n = atoi(argv[2]);
-	string file = argv[1];
-	//int nt = atoi(argv[3]); 
-	//vector <vector <double>> mat(n, vector<double>(n));
+	
+	if (argc > 5) {
+		cout << "Invalid number of arguments: "<<argc;
+		return -1;
+	}
+	int n= atoi(argv[3]);
+	string file = argv[2];
+	int nt = atoi(argv[4]);
 	vector <float> mat(n*n);
-	readCSVmpi(file, mat, n);
-	lu(mat, n, argc, argv);
+
+	switch (atoi(argv[1])) {
+		case 1: //Sequential
+			readCSV(file, mat, n);
+			lu(mat, n);
+			break;
+		case 2: //OpenMP
+			readCSV(file, mat, n);
+			lu(mat,n,nt);
+			break;
+		case 3: //OpenMPI
+			readCSV(file, mat, n);
+			lu(mat, n, argc, argv);
+			break;
+		default:
+			cout<<"Command Not Found";
+			break;
+	}
 
 	return 0;
 }
