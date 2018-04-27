@@ -149,35 +149,43 @@ void lu(vector <float> mat, int n, int argc, char* argv[]) { //Using Forward Gau
 	}
 
 	if(rank==0) {
+		ofstream l, u;
+
+		//Writing CSV
+        	u.open("U.csv");
+		l.open("L.csv");
 
 		//Printing Upper
    		float z = 0;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				if (j >= i) 
-					printf("% *.*f\t", 4, 2, mat[i * n + j]);
+				if (j >= i)
+					u<<mat[i*n+j]<<"\t";
 				else 
-					printf("% *.*f\t", 4, 2, z);
+					u<<z<<"\t";
 				
       			}
-      			cout<<endl;
+      			u<<endl;
    		}
 
 		//Printing Lower
 		z = 0;
-		int u = 1;
+		int k = 1;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (j > i) {
-					printf("% *.*f\t", 4, 2, z);
+					l<<z<<"\t";
 				} else if (i == j) {
-					printf("% *.*f\t", 4, 2, u);
+					l<<k<<"\t";
 				} else {
-					printf("% *.*f\t", 4, 2, mat[i * n + j]);
+					l<<mat[i*n+j]<<"\t";
 				}
 			}
-      			cout<<endl;
+      			l<<endl;
 		}
+
+		u.close();
+		l.close();
 	}
 	
 	MPI_Finalize();
