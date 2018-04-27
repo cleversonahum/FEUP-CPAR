@@ -112,9 +112,31 @@ void se(int n, string filename, int argc, char* argv[]) {
 
 
 int main(int argc, char* argv[]) {
-	int n = atoi(argv[1]);
+
+	if (argc > 5) {
+		cout << "Invalid number of arguments";
+		return -1;
+	}
+
+	int n = atoi(argv[3]);
 	string filename = argv[2];
-	//int nt = atoi(argv[3]);
-	se(atoi(argv[1]), argv[2], argc, argv);
+	int nt = atoi(argv[4]);
+
+			cout<<"N "<<n<<" filename "<<filename<<" nt "<<nt;
+	switch (atoi(argv[1])) {
+		case 1: //Sequential
+			se(n, filename);
+			break;
+		case 2: //OpenMP
+			se(n,filename,nt);
+			break;
+		case 3: //OpenMPI
+			se(n, filename, argc, argv);
+			break;
+		default:
+			cout<<"Command Not Found";
+			break;
+        }
+	
 	return 0;
 }
