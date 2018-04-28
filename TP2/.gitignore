@@ -1,0 +1,8 @@
+*
+!.gitignore
+!hostfile
+!lu.cpp
+!Makefile
+!matrix*
+!run
+!se.cpp
