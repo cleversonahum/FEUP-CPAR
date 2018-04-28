@@ -3,7 +3,7 @@
 !hostfile
 !lu.cpp
 !Makefile
-!matrix*
+!matrix.csv
 !run
 !se.cpp
 !matrixGenerator.cpp
