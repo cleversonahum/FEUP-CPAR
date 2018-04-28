@@ -3,6 +3,7 @@
 #include <fstream>
 #include <mpi.h>
 #include <math.h>
+#include <time.h>
 
 using namespace std;
 
@@ -97,7 +98,7 @@ void se(int n, string filename, int argc, char* argv[]) {
 				primes[i] &= number[j][i];
 
 		file.open(filename);
-        	file << "Primes until " << n << "\n";
+		file << "Primes until " << n << "\n";
 		if(rank==0)
 			for (int p=0; p<primes.size(); p++)
 				if (primes[p])
@@ -122,7 +123,8 @@ int main(int argc, char* argv[]) {
 	string filename = argv[2];
 	int nt = atoi(argv[4]);
 
-			cout<<"N "<<n<<" filename "<<filename<<" nt "<<nt;
+	clock_t tStart = clock();
+
 	switch (atoi(argv[1])) {
 		case 1: //Sequential
 			se(n, filename);
@@ -137,6 +139,8 @@ int main(int argc, char* argv[]) {
 			cout<<"Command Not Found";
 			break;
         }
+
+	cout<<n<<"\t"<<((double)(clock() - tStart)/CLOCKS_PER_SEC);
 	
 	return 0;
 }

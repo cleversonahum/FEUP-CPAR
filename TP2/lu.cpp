@@ -5,6 +5,7 @@
 #include <unistd.h> 
 #include <mpi.h>
 #include <math.h>
+#include <time.h>
 
 using namespace std;
 
@@ -230,6 +231,8 @@ int main(int argc, char* argv[]) {
 	int nt = atoi(argv[4]);
 	vector <float> mat(n*n);
 
+	clock_t tStart = clock();
+
 	switch (atoi(argv[1])) {
 		case 1: //Sequential
 			readCSV(file, mat, n);
@@ -247,6 +250,8 @@ int main(int argc, char* argv[]) {
 			cout<<"Command Not Found";
 			break;
 	}
+
+	cout<<n<<"\t"<<((double)(clock() - tStart)/CLOCKS_PER_SEC);
 
 	return 0;
 }
