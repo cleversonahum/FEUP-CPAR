@@ -3,6 +3,8 @@ run="mpirun --hostfile hostfile -np"
 
 printf "SE Execution\n\n"
 
+#set -x
+
 printf "Sequential\n"
 for i in {100000000..600000000..100000000}
 	do
@@ -44,9 +46,8 @@ aux=1
 for i in {1000..6000..1000}
 	do
 		$run 1 lu 1 matrix$aux.csv $i 0
-		cat matrix$aux.csv
 		printf "\n"
-		aux++
+		aux=$(($aux+1))
 	done
 
 aux=1
@@ -61,7 +62,7 @@ for i in {1000..6000..1000}
 		printf "\n"
 		$run 1 lu 2 teste$aux.csv $i 4
 		printf "\n"
-		aux++
+		aux=$(($aux+1))
 	done
 
 
@@ -77,5 +78,5 @@ for i in {1000..6000..1000}
 		printf "\n"
 		$run 4 lu 3 teste$aux.csv $i 0
 		printf "\n"
-		aux++
+		aux=$(($aux+1))
 	done
