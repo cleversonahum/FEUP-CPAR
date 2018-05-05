@@ -1,7 +1,7 @@
 # FEUP-CPAR
 Repository with Practical works from Parallel Computing - FEUP
 
-Implementation of LU Decomposition and Sieve of Eratosthenes using C++. Different versions were implemented, having a sequential version, an OpenMP version (shared memory) and an OpenMPI version (Distributed Version).
+Implementation of LU Decomposition and Sieve of Eratosthenes using C++. Different versions were implemented, having a sequential version, an OpenMP version (shared memory) and an OpenMPI version (Distributed Memory).
 
 ## Running
 ```
